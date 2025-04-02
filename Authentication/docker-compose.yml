@@ -1,0 +1,36 @@
+﻿services:
+  authentication-app:
+    build:
+      context: D:/C#/Authentication/Authentication
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - sqlserver
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=AuthenticationDB1;User Id=sa;Password=YourPassword;
+
+  hello2:
+    build: .
+    ports:
+      - "5123:5123"
+      - "7037:7037"
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5123;http://0.0.0.0:7037
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+    restart: always
+
+  sqlserver:  # FIXED INDENTATION HERE
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    environment:
+      SA_PASSWORD: "YourStrong@Pass123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+
+volumes:
+  sql_data:
